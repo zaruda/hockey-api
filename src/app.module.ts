@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-
+import { ConfigModule } from '@nestjs/config';
 import { GoalModule } from 'src/modules/goal/goal.module';
 
 @Module({
-  imports: [GoalModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true }), GoalModule],
   controllers: [],
   providers: [],
 })

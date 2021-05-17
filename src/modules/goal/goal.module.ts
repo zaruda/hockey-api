@@ -1,24 +1,10 @@
-import { ClientsModule, Transport } from '@nestjs/microservices';
 import { Module } from '@nestjs/common';
 import { GoalController } from './goal.controller';
-
-const GoalMicroservice = ClientsModule.register([
-  {
-    name: 'GOAL_SERVICE',
-    transport: Transport.RMQ,
-    options: {
-      urls: ['amqp://localhost:5672'],
-      queue: 'goals',
-      queueOptions: {
-        durable: false,
-      },
-    },
-  },
-]);
+import configFactory from './configFactory';
 
 @Module({
-  imports: [GoalMicroservice],
+  imports: [],
   controllers: [GoalController],
-  providers: [],
+  providers: [configFactory],
 })
 export class GoalModule {}

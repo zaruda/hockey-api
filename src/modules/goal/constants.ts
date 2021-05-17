@@ -1,0 +1,1 @@
+export const GOAL_SERVICE_NAME = 'GOAL_SERVICE';
