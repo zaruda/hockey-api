@@ -3,7 +3,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
 
 @Controller()
-export class AppController {
+export class GoalController {
   constructor(@Inject('GOAL_SERVICE') private client: ClientProxy) {}
 
   @Get('/')
@@ -12,7 +12,7 @@ export class AppController {
   }
 
   @Post('create')
-  getHello(): Observable<string> {
+  create(): Observable<string> {
     return this.client.send<string>('create', { date: Date.now() });
   }
 }
