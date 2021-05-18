@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { GoalController } from './goal.controller';
-import configFactory from './configFactory';
+import ConfigProvider from './config.provider';
 
 @Module({
   imports: [],
   controllers: [GoalController],
-  providers: [configFactory],
+  providers: [ConfigProvider],
 })
 export class GoalModule {}
