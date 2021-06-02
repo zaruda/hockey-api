@@ -1,19 +1,19 @@
-import { ConfigService } from '@nestjs/config';
 import { ClientProxyFactory, Transport } from '@nestjs/microservices';
 import { GOAL_SERVICE } from './goal.constants';
+import { AppConfigService } from '../../config/config.service';
 
 export default {
   provide: GOAL_SERVICE,
-  useFactory: (configService: ConfigService) =>
+  useFactory: (configService: AppConfigService) =>
     ClientProxyFactory.create({
       transport: Transport.RMQ,
       options: {
-        urls: [configService.get('RABBITMQ_URI')],
+        urls: [configService.rabbitMqUri],
         queue: 'goals',
         queueOptions: {
           durable: false,
         },
       },
     }),
-  inject: [ConfigService],
+  inject: [AppConfigService],
 };
