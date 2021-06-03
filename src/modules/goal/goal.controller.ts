@@ -7,48 +7,57 @@ import {
   Body,
   Patch,
   Delete,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { Observable } from 'rxjs';
+import {
+  CreateGoalEntity,
+  GoalEntity,
+  UpdateGoalEntity,
+} from 'src/entities/goal';
 import { GOAL_SERVICE } from './goal.constants';
 
-type GoalEntity = {
-  date: string;
-};
-
-type CreateGoalEntity = GoalEntity;
-
-type UpdateGoalEntity = Partial<GoalEntity>;
-
 @Controller('goals')
+@UseInterceptors(ClassSerializerInterceptor)
 export class GoalController {
   constructor(@Inject(GOAL_SERVICE) private service: ClientProxy) {}
 
   @Get()
   async getAllGoals(): Promise<GoalEntity[]> {
-    return await this.service.send('get', {}).toPromise();
+    const goals = await this.service.send('get', {}).toPromise();
+
+    return goals.map((g) => new GoalEntity(g));
   }
 
   @Post()
-  create(@Body() goal: CreateGoalEntity): Observable<CreateGoalEntity> {
-    return this.service.send('create', goal);
+  async create(@Body() goal: CreateGoalEntity): Promise<GoalEntity> {
+    const createdGoal = await this.service.send('create', goal).toPromise();
+
+    return new GoalEntity(createdGoal);
   }
 
   @Get(':id')
   async getGoalById(@Param('id') id: string): Promise<GoalEntity> {
-    return await this.service.send('getById', id).toPromise();
+    const goal = await this.service.send('getById', id).toPromise();
+
+    return new GoalEntity(goal);
   }
 
   @Patch(':id')
-  updateGoalById(
+  async updateGoalById(
     @Param('id') id: string,
     @Body() goal: Partial<UpdateGoalEntity>,
-  ): Observable<GoalEntity> {
-    return this.service.send('updateById', { id, goal });
+  ): Promise<GoalEntity> {
+    const updatedGoal = await this.service
+      .send('updateById', { id, goal })
+      .toPromise();
+
+    return new GoalEntity(updatedGoal);
   }
 
   @Delete(':id')
-  deleteGoalById(@Param('id') id: string): Observable<void> {
-    return this.service.send('deleteById', id);
+  deleteGoalById(@Param('id') id: string): Promise<void> {
+    return this.service.send('deleteById', id).toPromise();
   }
 }
