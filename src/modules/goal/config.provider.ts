@@ -11,7 +11,7 @@ export default {
         urls: [configService.rabbitMqUri],
         queue: 'goals',
         queueOptions: {
-          durable: false,
+          durable: true,
         },
       },
     }),
