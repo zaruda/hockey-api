@@ -1,11 +1,7 @@
-import { Exclude } from 'class-transformer';
-
 class GoalEntity {
-  _id: string;
+  id: string;
   date: string;
-
-  @Exclude()
-  __v: string;
+  name: string;
 
   constructor(partial: Partial<GoalEntity>) {
     Object.assign(this, partial);
