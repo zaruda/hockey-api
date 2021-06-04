@@ -9,6 +9,7 @@ import {
   Delete,
   UseInterceptors,
   ClassSerializerInterceptor,
+  UseGuards,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import {
@@ -16,10 +17,13 @@ import {
   GoalEntity,
   UpdateGoalEntity,
 } from 'src/entities/goal';
+import { UserGuard } from 'src/guards/user.guard';
+import { TimeoutInterceptor } from 'src/interceptor/timeout.interceptor';
 import { GOAL_SERVICE } from './goal.constants';
 
 @Controller('goals')
-@UseInterceptors(ClassSerializerInterceptor)
+@UseGuards(UserGuard)
+@UseInterceptors(ClassSerializerInterceptor, TimeoutInterceptor)
 export class GoalController {
   constructor(@Inject(GOAL_SERVICE) private service: ClientProxy) {}
 
@@ -57,7 +61,7 @@ export class GoalController {
   }
 
   @Delete(':id')
-  deleteGoalById(@Param('id') id: string): Promise<void> {
-    return this.service.send('deleteById', id).toPromise();
+  async deleteGoalById(@Param('id') id: string): Promise<void> {
+    return await this.service.send('deleteById', id).toPromise();
   }
 }

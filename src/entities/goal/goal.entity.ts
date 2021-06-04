@@ -1,7 +1,7 @@
 import { Exclude } from 'class-transformer';
 
 class GoalEntity {
-  id: string;
+  _id: string;
   date: string;
 
   @Exclude()
