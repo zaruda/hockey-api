@@ -12,6 +12,7 @@ export default {
         queue: 'goals',
         queueOptions: {
           durable: true,
+          messageTtl: 10000,
         },
       },
     }),
