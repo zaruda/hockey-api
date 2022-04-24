@@ -10,13 +10,14 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Compiling the dist folder
-      - npm run  build
+      - npm run build
   post_build:
     commands:
       - echo Build completed on `date`
 # Include only the files required for your application to run.
 artifacts:
   files:
+    - Procfile
     - package.json
     - dist/**/*
     - node_modules/**/*
