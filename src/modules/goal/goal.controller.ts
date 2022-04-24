@@ -17,12 +17,12 @@ import {
   GoalEntity,
   UpdateGoalEntity,
 } from 'src/entities/goal';
-import { UserGuard } from 'src/guards/user.guard';
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import { TimeoutInterceptor } from 'src/interceptor/timeout.interceptor';
 import { GOAL_SERVICE } from './goal.constants';
 
 @Controller('goals')
-@UseGuards(UserGuard)
+@UseGuards(JwtAuthGuard)
 @UseInterceptors(ClassSerializerInterceptor, TimeoutInterceptor)
 export class GoalController {
   constructor(@Inject(GOAL_SERVICE) private service: ClientProxy) {}

@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { GoalController } from './goal.controller';
-import ConfigProvider from './config.provider';
 import { AppConfigModule } from 'src/config/config.module';
+import GoalService from './goal.service';
 
 @Module({
   imports: [AppConfigModule],
   controllers: [GoalController],
-  providers: [ConfigProvider],
+  providers: [GoalService],
 })
 export class GoalModule {}

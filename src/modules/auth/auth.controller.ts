@@ -1,25 +1,14 @@
-import { Controller, Get, UseGuards, Session } from '@nestjs/common';
-import { SSOAuthGuard } from './sso-auth.guard';
-import { User } from 'src/decorators/user.decorator';
-// import { JWTAuthGuard } from './jwt-auth.guard';
+import { Controller, UseGuards, Post, Request } from '@nestjs/common';
+import { LocalAuthGuard } from 'src/guards/local-auth.guard';
+import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor() {
-    console.log('AuthController created');
-  }
+  constructor(private authService: AuthService) {}
 
-  @Get('login')
-  @UseGuards(SSOAuthGuard)
-  login() {
-    return;
-  }
-
-  @Get('callback')
-  @UseGuards(SSOAuthGuard)
-  async callback(@User() user: any, @Session() session: Record<string, any>) {
-    session.user = user;
-
-    return user;
+  @UseGuards(LocalAuthGuard)
+  @Post('login')
+  async login(@Request() req) {
+    return this.authService.login(req.user);
   }
 }

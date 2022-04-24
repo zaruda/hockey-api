@@ -1,40 +1,24 @@
 import { Module } from '@nestjs/common';
-import { Issuer, Strategy } from 'openid-client';
-import * as passport from 'passport';
-import { AppConfigModule } from 'src/config/config.module';
-import { AppConfigService } from 'src/config/config.service';
-import { CLIENT, PASSPORT } from './auth.constants';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
+import { AuthService } from './auth.service';
+import { LocalStrategy } from './local.strategy';
+import { UsersModule } from '../users/users.module';
+import { jwtConstants } from './constants';
+import { JwtStrategy } from './jwt.strategy';
 import { AuthController } from './auth.controller';
 
 @Module({
-  imports: [AppConfigModule],
-  providers: [
-    {
-      provide: CLIENT,
-      useFactory: async (configService: AppConfigService) => {
-        const OidcIssuer = await Issuer.discover(configService.oidcUri);
-        return new OidcIssuer.Client({
-          client_id: configService.oidcClientId,
-          client_secret: configService.oidcClientSecret,
-          redirect_uris: [configService.oidcRedirectUri],
-          response_types: ['code'],
-        });
-      },
-      inject: [AppConfigService],
-    },
-    {
-      provide: PASSPORT,
-      useFactory: (client) => {
-        return passport.use(
-          'sso',
-          new Strategy({ client }, (_, userinfo, done) => {
-            return done(null, userinfo);
-          }),
-        );
-      },
-      inject: [CLIENT],
-    },
+  imports: [
+    UsersModule,
+    PassportModule,
+    JwtModule.register({
+      secret: jwtConstants.secret,
+      signOptions: { expiresIn: '1h' },
+    }),
   ],
   controllers: [AuthController],
+  providers: [AuthService, LocalStrategy, JwtStrategy],
+  exports: [AuthService],
 })
 export class AuthModule {}
