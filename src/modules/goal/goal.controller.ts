@@ -12,14 +12,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import {
-  CreateGoalEntity,
-  GoalEntity,
-  UpdateGoalEntity,
-} from 'src/entities/goal';
+import GoalEntity from './entities/goal.entity';
+import { CreateGoalDto, UpdateGoalDto } from './dto';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import { TimeoutInterceptor } from 'src/interceptor/timeout.interceptor';
 import { GOAL_SERVICE } from './goal.constants';
+import { firstValueFrom } from 'rxjs';
 
 @Controller('goals')
 @UseGuards(JwtAuthGuard)
@@ -35,7 +33,7 @@ export class GoalController {
   }
 
   @Post()
-  async create(@Body() goal: CreateGoalEntity): Promise<GoalEntity> {
+  async create(@Body() goal: CreateGoalDto): Promise<GoalEntity> {
     const createdGoal = await this.service.send('create', goal).toPromise();
 
     return new GoalEntity(createdGoal);
@@ -51,11 +49,13 @@ export class GoalController {
   @Patch(':id')
   async updateGoalById(
     @Param('id') id: string,
-    @Body() goal: Partial<UpdateGoalEntity>,
+    @Body() goal: Partial<UpdateGoalDto>,
   ): Promise<GoalEntity> {
-    const updatedGoal = await this.service
-      .send('updateById', { id, goal })
-      .toPromise();
+    const updatedGoalObservable = await this.service.send('updateById', {
+      id,
+      goal,
+    });
+    const updatedGoal = await firstValueFrom(updatedGoalObservable);
 
     return new GoalEntity(updatedGoal);
   }
